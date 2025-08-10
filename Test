@@ -9,6 +9,14 @@ if game.PlaceId == 17574618959 then
 
     local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
+    -- Services
+
+    local Players = game:GetService("Players")
+
+    -------
+
+    print("V1.2")
+
     local Window = Rayfield:CreateWindow({
     Name = "ZenHub",
     Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
@@ -67,30 +75,26 @@ if game.PlaceId == 17574618959 then
     end,
     })
 
-local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local Humanoid = Character:WaitForChild("Humanoid")
 
-local originalWalkspeed = Humanoid.WalkSpeed
-local currentSliderValue = 16
 local speedEnabled = false
 
+-- Create Toggle
 local Toggle = Tab1:CreateToggle({
     Name = "Speed",
     CurrentValue = false,
     Flag = "Toggle1",
     Callback = function(Value)
         speedEnabled = Value
-        if Value == true then
-            originalWalkspeed = Humanoid.WalkSpeed
-            Humanoid.WalkSpeed = currentSliderValue
-        else
-            Humanoid.WalkSpeed = originalWalkspeed
+        if Value == false then
+            Humanoid.WalkSpeed = 16
         end
     end,
 })
 
+-- Create Slider first so we can reference it
 local Slider = Tab1:CreateSlider({
     Name = "Walkspeed",
     Range = {16, 100},
@@ -99,13 +103,14 @@ local Slider = Tab1:CreateSlider({
     CurrentValue = 16,
     Flag = "Slider1",
     Callback = function(Value)
-        currentSliderValue = Value
         if speedEnabled then
-            Humanoid.WalkSpeed = currentSliderValue
+            Humanoid.WalkSpeed = Value
         end
     end,
 })
 
+Toggle:Set(false)
+Humanoid.WalkSpeed = 16
 
     Rayfield:LoadConfiguration()
 else
