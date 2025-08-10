@@ -1,0 +1,116 @@
+-- ZHub
+
+if game.PlaceId == 17574618959 then
+
+        game:GetService("StarterGui"):SetCore("SendNotification",{
+        Title = "ZenHub",
+        Text = "Loading Script...",
+    })
+
+    local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+    local Window = Rayfield:CreateWindow({
+    Name = "ZenHub",
+    Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+    LoadingTitle = "ZenHub is now loading.",
+    LoadingSubtitle = "by Z",
+    ShowText = "ZenHub", -- for mobile users to unhide rayfield, change if you'd like
+    Theme = "Serenity", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+    ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+    DisableRayfieldPrompts = false,
+    DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil, -- Create a custom folder for your hub/game
+        FileName = "ZenHub"
+    },
+
+    Discord = {
+        Enabled = true, -- Prompt the user to join your Discord server if their executor supports it
+        Invite = "https://discord.gg/xKqBjWDzP5", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+        RememberJoins = false -- Set this to false to make them join the discord every time they load it up
+    },
+
+    KeySystem = true, -- Set this to true to use our key system
+    KeySettings = {
+        Title = "ZenHub",
+        Subtitle = "Key System",
+        Note = "Join the server and verify to get your key.", -- Use this to tell the user how to get a key
+        FileName = "ZHubKey", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+        SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+        GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+        Key = {"ZHub"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+    }
+    })
+
+    -- Tabs
+    local Tab1 = Window:CreateTab("Main")
+    local Tab2 = Window:CreateTab("Extra")
+
+    -- Sections
+    local Section1 = Tab1:CreateSection("Character")
+    local Section2 = Tab2:CreateSection("Debug")
+
+    -- Dividers
+
+    local Divider1 = Tab1:CreateDivider()
+    local Divider2 = Tab2:CreateDivider()
+
+    -- Buttons
+    local Button = Tab1:CreateButton({
+    Name = "Button Example",
+    Callback = function()
+    -- The function that takes place when the button is pressed
+    end,
+    })
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid")
+
+local originalWalkspeed = Humanoid.WalkSpeed
+local currentSliderValue = 16
+local speedEnabled = false
+
+local Slider = Tab1:CreateSlider({
+    Name = "Walkspeed",
+    Range = {16, 100},
+    Increment = 1,
+    Suffix = "Walkspeed",
+    CurrentValue = 16,
+    Flag = "Slider1",
+    Callback = function(Value)
+        currentSliderValue = Value
+        if speedEnabled then
+            Humanoid.WalkSpeed = currentSliderValue
+        end
+    end,
+})
+
+local Toggle = Tab1:CreateToggle({
+    Name = "Speed",
+    CurrentValue = false,
+    Flag = "Toggle1",
+    Callback = function(Value)
+        speedEnabled = Value
+        if Value == true then
+            originalWalkspeed = Humanoid.WalkSpeed
+            Humanoid.WalkSpeed = currentSliderValue
+        else
+            Humanoid.WalkSpeed = originalWalkspeed
+        end
+    end,
+})
+
+
+    Rayfield:LoadConfiguration()
+else
+    game:GetService("StarterGui"):SetCore("SendNotification",{
+	Title = "ZenHub",
+	Text = "Game is not Supported.",
+})
+end
