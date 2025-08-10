@@ -15,7 +15,7 @@ if game.PlaceId == 17574618959 then
 
     -------
 
-    print("V1.21")
+    print("V1.3")
 
     local Window = Rayfield:CreateWindow({
     Name = "ZenHub",
