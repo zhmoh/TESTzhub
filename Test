@@ -15,7 +15,7 @@ if game.PlaceId == 17574618959 then
 
     -------
 
-    print("V1.31")
+    print("V1.32")
 
     local Window = Rayfield:CreateWindow({
     Name = "ZenHub",
@@ -79,26 +79,9 @@ local LocalPlayer = Players.LocalPlayer
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local Humanoid = Character:WaitForChild("Humanoid")
 
-local cs
-
+local originalWalkspeed = 16
 local speedEnabled = false
 
--- Create Toggle
-local Toggle = Tab1:CreateToggle({
-    Name = "Speed",
-    CurrentValue = false,
-    Flag = "Toggle1",
-    Callback = function(Value)
-        speedEnabled = Value
-        if Value == false then
-            Humanoid.WalkSpeed = 16
-        else
-            Humanoid.WalkSpeed = cs
-        end
-    end,
-})
-
--- Create Slider first so we can reference it
 local Slider = Tab1:CreateSlider({
     Name = "Walkspeed",
     Range = {16, 100},
@@ -109,7 +92,20 @@ local Slider = Tab1:CreateSlider({
     Callback = function(Value)
         if speedEnabled then
             Humanoid.WalkSpeed = Value
-            cs = Value
+        end
+    end,
+})
+
+local Toggle = Tab1:CreateToggle({
+    Name = "Speed",
+    CurrentValue = false,
+    Flag = "Toggle1",
+    Callback = function(Value)
+        speedEnabled = Value
+        if Value == true then
+            Humanoid.WalkSpeed = Slider.CurrentValue
+        else
+            Humanoid.WalkSpeed = originalWalkspeed
         end
     end,
 })
