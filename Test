@@ -76,21 +76,6 @@ local originalWalkspeed = Humanoid.WalkSpeed
 local currentSliderValue = 16
 local speedEnabled = false
 
-local Slider = Tab1:CreateSlider({
-    Name = "Walkspeed",
-    Range = {16, 100},
-    Increment = 1,
-    Suffix = "Walkspeed",
-    CurrentValue = 16,
-    Flag = "Slider1",
-    Callback = function(Value)
-        currentSliderValue = Value
-        if speedEnabled then
-            Humanoid.WalkSpeed = currentSliderValue
-        end
-    end,
-})
-
 local Toggle = Tab1:CreateToggle({
     Name = "Speed",
     CurrentValue = false,
@@ -102,6 +87,21 @@ local Toggle = Tab1:CreateToggle({
             Humanoid.WalkSpeed = currentSliderValue
         else
             Humanoid.WalkSpeed = originalWalkspeed
+        end
+    end,
+})
+
+local Slider = Tab1:CreateSlider({
+    Name = "Walkspeed",
+    Range = {16, 100},
+    Increment = 1,
+    Suffix = "Walkspeed",
+    CurrentValue = 16,
+    Flag = "Slider1",
+    Callback = function(Value)
+        currentSliderValue = Value
+        if speedEnabled then
+            Humanoid.WalkSpeed = currentSliderValue
         end
     end,
 })
