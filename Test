@@ -110,7 +110,6 @@ local Slider = Tab1:CreateSlider({
 })
 
 Toggle:Set(false)
-Humanoid.WalkSpeed = 16
 
     Rayfield:LoadConfiguration()
 else
