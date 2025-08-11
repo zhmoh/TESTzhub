@@ -79,53 +79,63 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
     end,
     })
 
-    -- # Speed Hack
+    -- # Speed
 
-    local LocalPlayer = Players.LocalPlayer
-    local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-    local Humanoid = Character:WaitForChild("Humanoid")
-
+    local Players         = game:GetService("Players")
+    local LocalPlayer     = Players.LocalPlayer
+    local speedEnabled    = false
     local originalWalkspeed = 16
-    local speedEnabled = false
 
-    local Slider1 = Tab1:CreateSlider({
-        Name = "Walkspeed",
-        Range = {16, 100},
-        Increment = 1,
-        Suffix = "Walkspeed",
-        CurrentValue = 16,
-        Flag = "Slider1",
-        Callback = function(Value)
+    local function getHumanoid()
+        local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        return char:WaitForChild("Humanoid")
+    end
+
+    local Humanoid = getHumanoid()
+
+    local SliderSpeed = Tab1:CreateSlider({
+        Name         = "Walkspeed",
+        Range        = {16, 100},
+        Increment    = 1,
+        Suffix       = "Walkspeed",
+        CurrentValue = originalWalkspeed,
+        Flag         = "SpeedSlider",
+        Callback     = function(val)
             if speedEnabled then
-                Humanoid.WalkSpeed = Value
+                Humanoid.WalkSpeed = val
             end
         end,
     })
 
-    local Toggle1 = Tab1:CreateToggle({
-        Name = "Speed",
+    local ToggleSpeed = Tab1:CreateToggle({
+        Name         = "Speed",
         CurrentValue = false,
-        Flag = "Toggle1",
-        Callback = function(Value)
-            speedEnabled = Value
-            if Value == true then
-                Humanoid.WalkSpeed = Slider1.CurrentValue
+        Flag         = "SpeedToggle",
+        Callback     = function(on)
+            speedEnabled = on
+            if on then
+                Humanoid.WalkSpeed = SliderSpeed.CurrentValue
             else
                 Humanoid.WalkSpeed = originalWalkspeed
             end
         end,
     })
 
-    Toggle1:Set(false)
+    ToggleSpeed:Set(false)
 
-    -- Infinite Jump
+    LocalPlayer.CharacterAdded:Connect(function(char)
+        Humanoid = char:WaitForChild("Humanoid")
+        if speedEnabled then
+            Humanoid.WalkSpeed = SliderSpeed.CurrentValue
+        end
+    end)
+
+    -- # Infinite Jump
 
     local LocalPlayer = Players.LocalPlayer
 
-    -- state
     local jumpEnabled = false
 
-    -- get initial Humanoid and store original JumpPower
     local function getHumanoid()
         local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
         return char:WaitForChild("Humanoid")
@@ -133,7 +143,6 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
     local Humanoid           = getHumanoid()
     local originalJumpPower  = Humanoid.JumpPower
 
-    -- Jumppower Slider
     local SliderJump = Tab1:CreateSlider({
         Name         = "Jumppower",
         Range        = {50, 200},
@@ -148,7 +157,6 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
         end,
     })
 
-    -- Infinite Jump Toggle
     local ToggleJump = Tab1:CreateToggle({
         Name         = "Infinite Jump",
         CurrentValue = false,
@@ -161,7 +169,6 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
         end,
     })
 
-    -- keep it working after death
     LocalPlayer.CharacterAdded:Connect(function(char)
         Humanoid = char:WaitForChild("Humanoid")
         if jumpEnabled then
@@ -169,14 +176,12 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
         end
     end)
 
-    -- actual infinite jump handler
     UIS.JumpRequest:Connect(function()
         if jumpEnabled and Humanoid then
             Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
         end
     end)
 
-    -- make sure it's off on first load
     ToggleJump:Set(false)
 
     Rayfield:LoadConfiguration()
