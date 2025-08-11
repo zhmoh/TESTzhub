@@ -68,7 +68,7 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
     local Divider2 = Tab2:CreateDivider()
 
     -- Buttons
-    local Button = Tab1:CreateButton({
+    local Button = Tab2:CreateButton({
     Name = "Rejoin",
     Callback = function()
         local ts = game:GetService("TeleportService")
@@ -78,85 +78,90 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
     end,
     })
 
-    -- # Speed Hack
+    -- # Speed Hack + Infinite Jump (with respawn fix)
 
--- # Speed Hack + Infinite Jump
+    local LocalPlayer = Players.LocalPlayer
+    local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local Humanoid = Character:WaitForChild("Humanoid")
 
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local Humanoid = Character:WaitForChild("Humanoid")
+    local originalWalkspeed = 16
+    local originalJumppower = 50
+    local speedEnabled = false
+    local jumpEnabled = false
 
-local originalWalkspeed = 16
-local originalJumppower = 50
-local speedEnabled = false
-local jumpEnabled = false
-
--- Walkspeed Slider
-local Slider1 = Tab1:CreateSlider({
-    Name = "Walkspeed",
-    Range = {16, 100},
-    Increment = 1,
-    Suffix = "Walkspeed",
-    CurrentValue = originalWalkspeed,
-    Flag = "Slider1",
-    Callback = function(Value)
-        if speedEnabled then
-            Humanoid.WalkSpeed = Value
+    local function applySettings()
+        if Humanoid then
+            Humanoid.WalkSpeed = speedEnabled and Slider1.CurrentValue or originalWalkspeed
+            Humanoid.JumpPower = jumpEnabled and Slider2.CurrentValue or originalJumppower
         end
-    end,
-})
+    end
 
--- Speed Toggle
-local Toggle1 = Tab1:CreateToggle({
-    Name = "Speed",
-    CurrentValue = false,
-    Flag = "Toggle1",
-    Callback = function(Value)
-        speedEnabled = Value
-        if Value then
-            Humanoid.WalkSpeed = Slider1.CurrentValue
-        else
-            Humanoid.WalkSpeed = originalWalkspeed
+    LocalPlayer.CharacterAdded:Connect(function(char)
+        Character = char
+        Humanoid = char:WaitForChild("Humanoid")
+        applySettings()
+    end)
+
+    -- Walkspeed Slider
+    local Slider1 = Tab1:CreateSlider({
+        Name = "Walkspeed",
+        Range = {16, 100},
+        Increment = 1,
+        Suffix = "Walkspeed",
+        CurrentValue = originalWalkspeed,
+        Flag = "Slider1",
+        Callback = function(Value)
+            if speedEnabled and Humanoid then
+                Humanoid.WalkSpeed = Value
+            end
+        end,
+    })
+
+    -- Speed Toggle
+    local Toggle1 = Tab1:CreateToggle({
+        Name = "Speed",
+        CurrentValue = false,
+        Flag = "Toggle1",
+        Callback = function(Value)
+            speedEnabled = Value
+            applySettings()
+        end,
+    })
+
+    -- Jumppower Slider
+    local Slider2 = Tab1:CreateSlider({
+        Name = "Jumppower",
+        Range = {50, 200},
+        Increment = 1,
+        Suffix = "Jumppower",
+        CurrentValue = originalJumppower,
+        Flag = "Slider2",
+        Callback = function(Value)
+            if jumpEnabled and Humanoid then
+                Humanoid.JumpPower = Value
+            end
+        end,
+    })
+
+    -- Infinite Jump Toggle
+    local Toggle2 = Tab1:CreateToggle({
+        Name = "Infinite Jump",
+        CurrentValue = false,
+        Flag = "Toggle2",
+        Callback = function(Value)
+            jumpEnabled = Value
+            applySettings()
+        end,
+    })
+
+    game:GetService("UserInputService").JumpRequest:Connect(function()
+        if jumpEnabled and Humanoid then
+            Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
         end
-    end,
-})
+    end)
 
--- Jumppower Slider
-local Slider2 = Tab1:CreateSlider({
-    Name = "Jumppower",
-    Range = {16, 100},
-    Increment = 1,
-    Suffix = "Jumppower",
-    CurrentValue = originalJumppower,
-    Flag = "Slider2",
-    Callback = function(Value)
-        if jumpEnabled then
-            Humanoid.JumpPower = Value
-        end
-    end,
-})
-
--- Infinite Jump Toggle
-local Toggle2 = Tab1:CreateToggle({
-    Name = "Infinite Jump",
-    CurrentValue = false,
-    Flag = "Toggle2",
-    Callback = function(Value)
-        jumpEnabled = Value
-        if Value then
-            Humanoid.JumpPower = Slider2.CurrentValue
-            -- Enable infinite jump
-            game:GetService("UserInputService").JumpRequest:Connect(function()
-                if jumpEnabled then
-                    Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                end
-            end)
-        else
-            Humanoid.JumpPower = originalJumppower
-        end
-    end,
-})
-
+    Toggle1:Set(false)
+    Toggle2:Set(false)
 
     Rayfield:LoadConfiguration()
 else
