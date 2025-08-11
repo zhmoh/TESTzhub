@@ -15,7 +15,7 @@ if game.PlaceId == 17574618959 then
 
     -------
 
-    print("V1.32")
+    print("V1.2")
 
     local Window = Rayfield:CreateWindow({
     Name = "ZenHub",
@@ -75,40 +75,41 @@ if game.PlaceId == 17574618959 then
     end,
     })
 
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local Humanoid = Character:WaitForChild("Humanoid")
 
-local originalWalkspeed = 16
-local speedEnabled = false
+    local LocalPlayer = Players.LocalPlayer
+    local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local Humanoid = Character:WaitForChild("Humanoid")
 
-local Slider = Tab1:CreateSlider({
-    Name = "Walkspeed",
-    Range = {16, 100},
-    Increment = 1,
-    Suffix = "Walkspeed",
-    CurrentValue = 16,
-    Flag = "Slider1",
-    Callback = function(Value)
-        if speedEnabled then
-            Humanoid.WalkSpeed = Value
-        end
-    end,
-})
+    local originalWalkspeed = 16
+    local speedEnabled = false
 
-local Toggle = Tab1:CreateToggle({
-    Name = "Speed",
-    CurrentValue = false,
-    Flag = "Toggle1",
-    Callback = function(Value)
-        speedEnabled = Value
-        if Value == true then
-            Humanoid.WalkSpeed = Slider.CurrentValue
-        else
-            Humanoid.WalkSpeed = originalWalkspeed
-        end
-    end,
-})
+    local Slider = Tab1:CreateSlider({
+        Name = "Walkspeed",
+        Range = {16, 100},
+        Increment = 1,
+        Suffix = "Walkspeed",
+        CurrentValue = 16,
+        Flag = "Slider1",
+        Callback = function(Value)
+            if speedEnabled then
+                Humanoid.WalkSpeed = Value
+            end
+        end,
+    })
+
+    local Toggle = Tab1:CreateToggle({
+        Name = "Speed",
+        CurrentValue = false,
+        Flag = "Toggle1",
+        Callback = function(Value)
+            speedEnabled = Value
+            if Value == true then
+                Humanoid.WalkSpeed = Slider.CurrentValue
+            else
+                Humanoid.WalkSpeed = originalWalkspeed
+            end
+        end,
+    })
 
 Toggle:Set(false)
 
