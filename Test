@@ -15,7 +15,7 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
 
     -------
 
-    print("V1.21")
+    print("V1.22")
 
     local Window = Rayfield:CreateWindow({
     Name = "ZenHub",
@@ -78,92 +78,108 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
     end,
     })
 
-    -- # Speed Hack + Infinite Jump (with respawn fix)
+    -- # Speed Hack + Infinite Jump (fixed)
 
-    local LocalPlayer = Players.LocalPlayer
+    local Players           = game:GetService("Players")
+    local UserInputService = game:GetService("UserInputService")
+    local LocalPlayer      = Players.LocalPlayer
+
+    -- grab initial character
     local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-    local Humanoid = Character:WaitForChild("Humanoid")
+    local Humanoid  = Character:WaitForChild("Humanoid")
 
+    -- defaults
     local originalWalkspeed = 16
     local originalJumppower = 50
+
+    -- state flags
     local speedEnabled = false
-    local jumpEnabled = false
+    local jumpEnabled  = false
 
-    local function applySettings()
-        if Humanoid then
-            Humanoid.WalkSpeed = speedEnabled and Slider1.CurrentValue or originalWalkspeed
-            Humanoid.JumpPower = jumpEnabled and Slider2.CurrentValue or originalJumppower
-        end
-    end
-
-    LocalPlayer.CharacterAdded:Connect(function(char)
-        Character = char
-        Humanoid = char:WaitForChild("Humanoid")
-        applySettings()
-    end)
+    -- placeholder vars
+    local Slider1, Toggle1, Slider2, Toggle2
 
     -- Walkspeed Slider
-    local Slider1 = Tab1:CreateSlider({
-        Name = "Walkspeed",
-        Range = {16, 100},
-        Increment = 1,
-        Suffix = "Walkspeed",
+    Slider1 = Tab1:CreateSlider({
+        Name         = "Walkspeed",
+        Range        = {16, 100},
+        Increment    = 1,
+        Suffix       = "Walkspeed",
         CurrentValue = originalWalkspeed,
-        Flag = "Slider1",
-        Callback = function(Value)
+        Flag         = "Slider1",
+        Callback     = function(val)
             if speedEnabled and Humanoid then
-                Humanoid.WalkSpeed = Value
+                Humanoid.WalkSpeed = val
             end
         end,
     })
 
     -- Speed Toggle
-    local Toggle1 = Tab1:CreateToggle({
-        Name = "Speed",
+    Toggle1 = Tab1:CreateToggle({
+        Name         = "Speed",
         CurrentValue = false,
-        Flag = "Toggle1",
-        Callback = function(Value)
-            speedEnabled = Value
+        Flag         = "Toggle1",
+        Callback     = function(on)
+            speedEnabled = on
             applySettings()
         end,
     })
 
     -- Jumppower Slider
-    local Slider2 = Tab1:CreateSlider({
-        Name = "Jumppower",
-        Range = {50, 200},
-        Increment = 1,
-        Suffix = "Jumppower",
+    Slider2 = Tab1:CreateSlider({
+        Name         = "Jumppower",
+        Range        = {50, 200},
+        Increment    = 1,
+        Suffix       = "Jumppower",
         CurrentValue = originalJumppower,
-        Flag = "Slider2",
-        Callback = function(Value)
+        Flag         = "Slider2",
+        Callback     = function(val)
             if jumpEnabled and Humanoid then
-                Humanoid.JumpPower = Value
+                Humanoid.JumpPower = val
             end
         end,
     })
 
     -- Infinite Jump Toggle
-    local Toggle2 = Tab1:CreateToggle({
-        Name = "Infinite Jump",
+    Toggle2 = Tab1:CreateToggle({
+        Name         = "Infinite Jump",
         CurrentValue = false,
-        Flag = "Toggle2",
-        Callback = function(Value)
-            jumpEnabled = Value
+        Flag         = "Toggle2",
+        Callback     = function(on)
+            jumpEnabled = on
             applySettings()
         end,
     })
 
-    game:GetService("UserInputService").JumpRequest:Connect(function()
+    -- apply current settings to the active humanoid
+    local function applySettings()
+        if not Humanoid then return end
+        Humanoid.WalkSpeed = speedEnabled and Slider1.CurrentValue or originalWalkspeed
+        Humanoid.JumpPower = jumpEnabled  and Slider2.CurrentValue or originalJumppower
+    end
+
+    -- re-acquire Humanoid on respawn and reapply
+    LocalPlayer.CharacterAdded:Connect(function(char)
+        Character = char
+        Humanoid  = char:WaitForChild("Humanoid")
+        applySettings()
+    end)
+
+    -- infinite jump listener
+    UserInputService.JumpRequest:Connect(function()
         if jumpEnabled and Humanoid then
             Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
         end
     end)
 
+    -- ensure UI toggles are off on first load
     Toggle1:Set(false)
     Toggle2:Set(false)
 
+    -- load saved config, then push those values to the humanoid
     Rayfield:LoadConfiguration()
+    applySettings()
+
 else
     game:GetService("StarterGui"):SetCore("SendNotification",{
 	Title = "ZenHub",
