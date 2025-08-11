@@ -12,10 +12,11 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
     -- Services
 
     local Players = game:GetService("Players")
+    local UIS = game:GetService("UserInputService")
 
     -------
 
-    print("V1.21")
+    print("V1.2")
 
     local Window = Rayfield:CreateWindow({
     Name = "ZenHub",
@@ -119,37 +120,64 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
 
     -- Infinite Jump
 
-        local jumpEnabled = false
+    local LocalPlayer = Players.LocalPlayer
 
-        local Slider2 = Tab1:CreateSlider({
-        Name = "Jumppower",
-        Range = {50, 200},
-        Increment = 1,
-        Suffix = "Jumppower",
-        CurrentValue = 50,
-        Flag = "Slider1",
-        Callback = function(Value)
-            if jumpEnabled then
-                Humanoid.JumpPower = Value
+    -- state
+    local jumpEnabled = false
+
+    -- get initial Humanoid and store original JumpPower
+    local function getHumanoid()
+        local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        return char:WaitForChild("Humanoid")
+    end
+    local Humanoid           = getHumanoid()
+    local originalJumpPower  = Humanoid.JumpPower
+
+    -- Jumppower Slider
+    local SliderJump = Tab1:CreateSlider({
+        Name         = "Jumppower",
+        Range        = {50, 200},
+        Increment    = 1,
+        Suffix       = "Jumppower",
+        CurrentValue = originalJumpPower,
+        Flag         = "JumpPower",
+        Callback     = function(val)
+            if jumpEnabled and Humanoid then
+                Humanoid.JumpPower = val
             end
         end,
     })
 
-    local Toggle2 = Tab1:CreateToggle({
-        Name = "Infinite Jump",
+    -- Infinite Jump Toggle
+    local ToggleJump = Tab1:CreateToggle({
+        Name         = "Infinite Jump",
         CurrentValue = false,
-        Flag = "Toggle1",
-        Callback = function(Value)
-            jumpEnabled = Value
-            if Value == true then
-                Humanoid.JumpPower = Slider2.CurrentValue
-            else
-                Humanoid.JumpPower = 50
+        Flag         = "InfiniteJump",
+        Callback     = function(on)
+            jumpEnabled = on
+            if Humanoid then
+                Humanoid.JumpPower = on and SliderJump.CurrentValue or originalJumpPower
             end
         end,
     })
 
-    Toggle2:Set(false)
+    -- keep it working after death
+    LocalPlayer.CharacterAdded:Connect(function(char)
+        Humanoid = char:WaitForChild("Humanoid")
+        if jumpEnabled then
+            Humanoid.JumpPower = SliderJump.CurrentValue
+        end
+    end)
+
+    -- actual infinite jump handler
+    UIS.JumpRequest:Connect(function()
+        if jumpEnabled and Humanoid then
+            Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end)
+
+    -- make sure it's off on first load
+    ToggleJump:Set(false)
 
     Rayfield:LoadConfiguration()
 else
