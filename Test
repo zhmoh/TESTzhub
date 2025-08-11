@@ -15,7 +15,7 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
 
     -------
 
-    print("V1.2")
+    print("V1.21")
 
     local Window = Rayfield:CreateWindow({
     Name = "ZenHub",
@@ -68,7 +68,7 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
     local Divider2 = Tab2:CreateDivider()
 
     -- Buttons
-    local Button = Tab1:CreateButton({
+    local Button = Tab2:CreateButton({
     Name = "Rejoin",
     Callback = function()
         local ts = game:GetService("TeleportService")
@@ -108,7 +108,7 @@ if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
         Callback = function(Value)
             speedEnabled = Value
             if Value == true then
-                Humanoid.WalkSpeed = Slider.CurrentValue
+                Humanoid.WalkSpeed = Slider1.CurrentValue
             else
                 Humanoid.WalkSpeed = originalWalkspeed
             end
