@@ -1,6 +1,6 @@
 -- ZHub
 
-if game.PlaceId == 17574618959 then
+if game.PlaceId == 17574618959 or game.PlaceId == 189707 then
 
         game:GetService("StarterGui"):SetCore("SendNotification",{
         Title = "ZenHub",
